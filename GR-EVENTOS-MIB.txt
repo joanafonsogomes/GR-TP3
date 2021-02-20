@@ -1,0 +1,200 @@
+GR-EVENTOS-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+	enterprises,
+	MODULE-IDENTITY,
+	OBJECT-TYPE,
+	Counter32,
+	TimeTicks
+		FROM SNMPv2-SMI
+	OBJECT-GROUP,
+	NOTIFICATION-GROUP
+		FROM SNMPv2-CONF;
+
+eventosMIB MODULE-IDENTITY
+	LAST-UPDATED "202102201414Z"	-- Feb 20, 2021, 2:14:00 PM
+	ORGANIZATION ""
+	CONTACT-INFO
+		""
+	DESCRIPTION
+		"MIB para monitorização de datas para
+		eventos."
+	REVISION "202102201414Z"	-- Feb 20, 2021, 2:14:00 PM
+	DESCRIPTION
+		"Initial version."
+	-- 1.3.6.1.4.1.8888
+	::= { enterprises 8888 }
+
+
+numeroEventos OBJECT-TYPE
+	SYNTAX  INTEGER
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		"Numero de eventos na MIB."
+	-- 1.3.6.1.4.1.8888.1
+	::= { eventosMIB 1 }
+
+
+eventosTable OBJECT-TYPE
+	SYNTAX  SEQUENCE OF EventoEntry
+	MAX-ACCESS not-accessible
+	STATUS  current
+	DESCRIPTION
+		"Tabela que armazena todos os eventos."
+	-- 1.3.6.1.4.1.8888.2
+	::= { eventosMIB 2 }
+
+
+eventoEntry OBJECT-TYPE
+	SYNTAX  EventoEntry
+	MAX-ACCESS not-accessible
+	STATUS  current
+	DESCRIPTION
+		"Entrada para a tabela de eventos."
+	INDEX {
+		eventoIndex }
+	-- 1.3.6.1.4.1.8888.2.1
+	::= { eventosTable 1 }
+
+
+EventoEntry ::= SEQUENCE {
+
+	eventoIndex         Counter32,
+	eventoName          OCTET STRING,
+	eventoEstado        INTEGER,
+	eventoTempo         TimeTicks,
+	eventoDuracao       TimeTicks,
+	eventoFrasePassado  OCTET STRING,
+	eventoFrasePresente OCTET STRING,
+	eventoFraseFuturo   INTEGER }
+
+
+eventoIndex OBJECT-TYPE
+	SYNTAX  Counter32
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		"Identificador do evento."
+	-- 1.3.6.1.4.1.8888.2.1.1
+	::= { eventoEntry 1 }
+
+
+eventoName OBJECT-TYPE
+	SYNTAX  OCTET STRING
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		"Nome do evento."
+	-- 1.3.6.1.4.1.8888.2.1.2
+	::= { eventoEntry 2 }
+
+
+eventoEstado OBJECT-TYPE
+	SYNTAX  INTEGER
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		"Estado atual do evento.
+		(0) Futuro
+		(1) Presente
+		(2) Passado"
+	-- 1.3.6.1.4.1.8888.2.1.3
+	::= { eventoEntry 3 }
+
+
+eventoTempo OBJECT-TYPE
+	SYNTAX  TimeTicks
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		"Tempo que falta para o evento ou, caso seja no passado, há quanto tempo foi o evento."
+	-- 1.3.6.1.4.1.8888.2.1.4
+	::= { eventoEntry 4 }
+
+
+eventoDuracao OBJECT-TYPE
+	SYNTAX  TimeTicks
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		"Duração do evento."
+	-- 1.3.6.1.4.1.8888.2.1.5
+	::= { eventoEntry 5 }
+
+
+eventoFrasePassado OBJECT-TYPE
+	SYNTAX  OCTET STRING
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		"Frase para descrever o evento no passado."
+	-- 1.3.6.1.4.1.8888.2.1.6
+	::= { eventoEntry 6 }
+
+
+eventoFrasePresente OBJECT-TYPE
+	SYNTAX  OCTET STRING
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		"Frase para descrever o evento no presente."
+	-- 1.3.6.1.4.1.8888.2.1.7
+	::= { eventoEntry 7 }
+
+
+eventoFraseFuturo OBJECT-TYPE
+	SYNTAX  INTEGER
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		"Frase para descrever o evento no futuro."
+	-- 1.3.6.1.4.1.8888.2.1.8
+	::= { eventoEntry 8 }
+
+
+-- Conformance
+--
+
+grMIBConf OBJECT IDENTIFIER 
+	-- 1.3.6.1.4.1.8888.3
+	::= { eventosMIB 3 }
+
+-- Groups
+--
+
+grMIBGroups OBJECT IDENTIFIER 
+	-- 1.3.6.1.4.1.8888.3.1
+	::= { grMIBConf 1 }
+
+-- Compliances
+--
+
+grMIBCompliances OBJECT IDENTIFIER 
+	-- 1.3.6.1.4.1.8888.3.2
+	::= { grMIBConf 2 }
+
+grMIBBasicGroup OBJECT-GROUP
+	OBJECTS {
+		numeroEventos,
+		eventoIndex,
+		eventoFrasePassado,
+		eventoFrasePresente,
+		eventoFraseFuturo,
+		eventoDuracao }
+	STATUS  current
+	DESCRIPTION
+		"Basic objects."
+	-- 1.3.6.1.4.1.8888.3.1.1
+	::= { grMIBGroups 1 }
+
+grMIBBasicEvents NOTIFICATION-GROUP
+	NOTIFICATIONS {
+	}
+	STATUS  current
+	DESCRIPTION
+		"Basic notifications."
+	-- 1.3.6.1.4.1.8888.3.1.2
+	::= { grMIBGroups 2 }
+
+END
