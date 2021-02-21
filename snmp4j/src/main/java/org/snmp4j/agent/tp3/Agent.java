@@ -1,67 +1,73 @@
-/** Copyright Text */
+/**
+ * Copyright Text
+ */
 package org.snmp4j.agent.tp3;
 
 // |:AgenPro|=_BEGIN
 // |AgenPro:|
 
-import java.io.*;
-import java.text.*;
-import java.util.*;
-
-import org.snmp4j.*;
+import org.snmp4j.MessageDispatcher;
+import org.snmp4j.MessageDispatcherImpl;
+import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.*;
-import org.snmp4j.agent.cfg.*;
-import org.snmp4j.agent.io.*;
-import org.snmp4j.agent.io.prop.*;
-import org.snmp4j.mp.*;
-import org.snmp4j.smi.*;
-import org.snmp4j.transport.*;
-import org.snmp4j.util.*;
-import org.snmp4j.security.SecurityProtocols;
-import org.snmp4j.log.LogFactory;
-import org.snmp4j.log.LogAdapter;
-import org.snmp4j.log.JavaLogFactory;
-import org.snmp4j.agent.mo.util.VariableProvider;
-import org.snmp4j.agent.request.SubRequest;
-import org.snmp4j.agent.request.RequestStatus;
-import org.snmp4j.agent.request.Request;
-import org.snmp4j.agent.request.SubRequestIterator;
+import org.snmp4j.agent.cfg.EngineBootsCounterFile;
+import org.snmp4j.agent.io.DefaultMOPersistenceProvider;
+import org.snmp4j.agent.io.MOInput;
+import org.snmp4j.agent.io.MOInputFactory;
+import org.snmp4j.agent.io.prop.PropertyMOInput;
 import org.snmp4j.agent.mo.DefaultMOFactory;
-import org.snmp4j.agent.mo.MOTableRowListener;
-import org.snmp4j.agent.mo.MOTableRowEvent;
-import org.snmp4j.agent.mo.snmp.TimeStamp;
-import org.snmp4j.agent.mo.MOMutableTableRow;
 import org.snmp4j.agent.mo.MOFactory;
+import org.snmp4j.agent.mo.util.VariableProvider;
+import org.snmp4j.agent.request.Request;
+import org.snmp4j.agent.request.RequestStatus;
+import org.snmp4j.agent.request.SubRequest;
+import org.snmp4j.agent.request.SubRequestIterator;
+import org.snmp4j.log.JavaLogFactory;
+import org.snmp4j.log.LogAdapter;
+import org.snmp4j.log.LogFactory;
+import org.snmp4j.mp.MPv3;
+import org.snmp4j.security.SecurityProtocols;
+import org.snmp4j.smi.*;
+import org.snmp4j.transport.TransportMappings;
+import org.snmp4j.util.ArgumentParser;
+import org.snmp4j.util.ThreadPool;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 // |:AgenPro|=import
 // |AgenPro:|
 
 public class Agent implements VariableProvider {
 
+    private static final String DEFAULT_CL_PARAMETERS = "-c[s{=Agent.cfg}] -bc[s{=Agent.bc}]";
+    private static final String DEFAULT_CL_COMMANDS =
+            "#address[s{=udp:127.0.0.1/161}<(udp|tcp):.*[/[0-9]+]?>] ..";
+    private static List<Evento> eventos = new ArrayList<>();
+
     static {
         LogFactory.setLogFactory(new JavaLogFactory());
     }
 
-    private static final String DEFAULT_CL_PARAMETERS = "-c[s{=Agent.cfg}] -bc[s{=Agent.bc}]";
-    private static final String DEFAULT_CL_COMMANDS =
-            "#address[s{=udp:127.0.0.1/161}<(udp|tcp):.*[/[0-9]+]?>] ..";
-
-    private LogAdapter logger = LogFactory.getLogger(Agent.class);
-
     protected AgentConfigManager agent;
     protected MOServer server;
-    private String configFile;
-    private File bootCounterFile;
-
     // supported MIBs
     protected Modules modules;
+    private LogAdapter logger = LogFactory.getLogger(Agent.class);
+    private String configFile;
+    private File bootCounterFile;
 
     public Agent(Map args) {
         configFile = (String) ((List) args.get("c")).get(0);
         bootCounterFile = new File((String) ((List) args.get("bc")).get(0));
 
         server = new DefaultMOServer();
-        MOServer[] moServers = new MOServer[] {server};
+        MOServer[] moServers = new MOServer[]{server};
         InputStream configInputStream = Agent.class.getResourceAsStream("AgentConfig.properties");
         if (configInputStream == null) {
             System.err.println("Unable to load AgentConfig.properties. File not found. Aborting");
@@ -93,6 +99,57 @@ public class Agent implements VariableProvider {
                         new EngineBootsCounterFile(bootCounterFile));
     }
 
+    private static void defaultMain(String args[]) {
+        ArgumentParser parser = new ArgumentParser(DEFAULT_CL_PARAMETERS, DEFAULT_CL_COMMANDS);
+        Map commandLineParameters = null;
+        try {
+            commandLineParameters = parser.parse(args);
+            Agent agent = new Agent(commandLineParameters);
+            // Add all available security protocols (e.g. SHA,MD5,DES,AES,3DES,..)
+            SecurityProtocols.getInstance().addDefaultProtocols();
+            // configure system group:
+            // Set system description:
+            // sampleAgent.agent.getSysDescr().setValue("My system description".getBytes());
+            // Set system OID (= OID of the AGENT-CAPABILITIES statement describing
+            // the implemented MIB objects of this agent:
+            // sampleAgent.agent.getSysOID().setValue("1.3.1.6.1.4.1....");
+            // Set the system services
+            // sampleAgent.agent.getSysServices().setValue(72);
+            agent.run();
+            // Fire a sample named trap generated by AgenPro:
+            // agent.modules.getIfMib().fireLinkDownIf10001(agent.server,
+            // 	 agent.agent.getNotificationOriginator(), null, null);
+        } catch (ParseException ex) {
+            System.err.println(ex.getMessage());
+        }
+    }
+
+    /**
+     * Runs a sample agent with a default configuration defined by <code>AgentConfig.properties
+     * </code>. A sample command line is:
+     *
+     * <pre>
+     * -c Agent.cfg -bc Agent.bc udp:127.0.0.1/4700 tcp:127.0.0.1/4700
+     * </pre>
+     *
+     * @param args the command line arguments defining at least the listen addresses. The format is
+     *     <code>-c[s{=Agent.cfg}] -bc[s{=Agent.bc}]
+     *    #address[s<(udp|tcp):.*[/[0-9]+]?>] ..</code>. For the format description see {@link
+     *     ArgumentParser}.
+     */
+    public static void main(String[] args) {
+        Evento e = new Evento("WebSummit",
+                LocalDateTime.of(2020,1,1,1,1),
+                Duration.ofMillis(604800000),
+                "O evento já acabou jessica!",
+                "OMG this is real?",
+                "NUNNNNCAAAA MAAAAAIS :(");
+        Agent.eventos.add(e);
+        // |:AgenPro|=main
+        defaultMain(args);
+        // |AgenPro:|
+    }
+
     protected void addListenAddresses(MessageDispatcher md, List addresses) {
         if (addresses == null || addresses.isEmpty()) {
             return;
@@ -113,6 +170,10 @@ public class Agent implements VariableProvider {
         agent.initialize();
         // this requires sysUpTime to be available.
         registerMIBs();
+
+        //Populate MIBs
+        update();
+
         // add proxy forwarder
         agent.setupProxyForwarder();
         // now continue agent setup and launch it.
@@ -178,12 +239,12 @@ public class Agent implements VariableProvider {
                             return false;
                         }
 
-                        public void setErrorStatus(int errorStatus) {
-                            status.setErrorStatus(errorStatus);
-                        }
-
                         public int getErrorStatus() {
                             return status.getErrorStatus();
+                        }
+
+                        public void setErrorStatus(int errorStatus) {
+                            status.setErrorStatus(errorStatus);
                         }
 
                         public RequestStatus getStatus() {
@@ -206,7 +267,8 @@ public class Agent implements VariableProvider {
                             return null;
                         }
 
-                        public void setUndoValue(Object undoInformation) {}
+                        public void setUndoValue(Object undoInformation) {
+                        }
 
                         public void completed() {
                             completed = true;
@@ -216,35 +278,38 @@ public class Agent implements VariableProvider {
                             return completed;
                         }
 
-                        public void setTargetMO(ManagedObject managedObject) {}
-
                         public ManagedObject getTargetMO() {
                             return null;
+                        }
+
+                        public void setTargetMO(ManagedObject managedObject) {
                         }
 
                         public int getIndex() {
                             return 0;
                         }
 
-                        public void setQuery(MOQuery query) {
-                            this.query = query;
-                        }
-
                         public MOQuery getQuery() {
                             return query;
+                        }
+
+                        public void setQuery(MOQuery query) {
+                            this.query = query;
                         }
 
                         public SubRequestIterator repetitions() {
                             return null;
                         }
 
-                        public void updateNextRepetition() {}
+                        public void updateNextRepetition() {
+                        }
 
                         public Object getUserObject() {
                             return null;
                         }
 
-                        public void setUserObject(Object userObject) {}
+                        public void setUserObject(Object userObject) {
+                        }
                     };
             mo.get(req);
             return vb.getVariable();
@@ -256,47 +321,18 @@ public class Agent implements VariableProvider {
         return agent;
     }
 
-    private static void defaultMain(String args[]) {
-        ArgumentParser parser = new ArgumentParser(DEFAULT_CL_PARAMETERS, DEFAULT_CL_COMMANDS);
-        Map commandLineParameters = null;
-        try {
-            commandLineParameters = parser.parse(args);
-            Agent agent = new Agent(commandLineParameters);
-            // Add all available security protocols (e.g. SHA,MD5,DES,AES,3DES,..)
-            SecurityProtocols.getInstance().addDefaultProtocols();
-            // configure system group:
-            // Set system description:
-            // sampleAgent.agent.getSysDescr().setValue("My system description".getBytes());
-            // Set system OID (= OID of the AGENT-CAPABILITIES statement describing
-            // the implemented MIB objects of this agent:
-            // sampleAgent.agent.getSysOID().setValue("1.3.1.6.1.4.1....");
-            // Set the system services
-            // sampleAgent.agent.getSysServices().setValue(72);
-            agent.run();
-            // Fire a sample named trap generated by AgenPro:
-            // agent.modules.getIfMib().fireLinkDownIf10001(agent.server,
-            // 	 agent.agent.getNotificationOriginator(), null, null);
-        } catch (ParseException ex) {
-            System.err.println(ex.getMessage());
+    //My classes
+
+    private synchronized void update() {
+        int count = 1;
+        //modules.getGrEventosMib().getEventoEntry().
+        for (Evento e : eventos) {
+            GrEventosMib.EventoEntryRow row = modules.getGrEventosMib().getEventoEntry()
+                    .createRow(new OID(String.valueOf(count)));
+            row = e.getEntry(row,count);
+            modules.getGrEventosMib().getEventoEntry().addRow(row);
+            count++;
         }
     }
 
-    /**
-     * Runs a sample agent with a default configuration defined by <code>AgentConfig.properties
-     * </code>. A sample command line is:
-     *
-     * <pre>
-     * -c Agent.cfg -bc Agent.bc udp:127.0.0.1/4700 tcp:127.0.0.1/4700
-     * </pre>
-     *
-     * @param args the command line arguments defining at least the listen addresses. The format is
-     *     <code>-c[s{=Agent.cfg}] -bc[s{=Agent.bc}]
-     *    #address[s<(udp|tcp):.*[/[0-9]+]?>] ..</code>. For the format description see {@link
-     *     ArgumentParser}.
-     */
-    public static void main(String[] args) {
-        // |:AgenPro|=main
-        defaultMain(args);
-        // |AgenPro:|
-    }
 }
