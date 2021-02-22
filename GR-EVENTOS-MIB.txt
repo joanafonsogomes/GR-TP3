@@ -62,7 +62,12 @@ EventoEntry ::= SEQUENCE {
 	eventoIndex         Counter32,
 	eventoName          OCTET STRING,
 	eventoEstado        INTEGER,
-	eventoTempo         TimeTicks,
+	eventoTempoAnos     INTEGER,
+	eventoTempoMeses    INTEGER,
+	eventoTempoSemanas  INTEGER,
+	eventoTempoDias     INTEGER,
+	eventoTempoHoras    INTEGER,
+	eventoTempoMinutos  INTEGER,
 	eventoDuracao       TimeTicks,
 	eventoFrasePassado  OCTET STRING,
 	eventoFrasePresente OCTET STRING,
@@ -102,14 +107,69 @@ eventoEstado OBJECT-TYPE
 	::= { eventoEntry 3 }
 
 
-eventoTempo OBJECT-TYPE
-	SYNTAX  TimeTicks
+eventoTempoAnos OBJECT-TYPE
+	SYNTAX  INTEGER
 	MAX-ACCESS read-only
 	STATUS  current
 	DESCRIPTION
-		"Tempo que falta para o evento ou, caso seja no passado, há quanto tempo foi o evento."
+		"Tempo que falta para o evento ou, caso seja no passado, há quanto tempo foi o evento.
+		Só a parte referente aos anos."
 	-- 1.3.6.1.4.1.8888.2.1.4
 	::= { eventoEntry 4 }
+
+
+eventoTempoMeses OBJECT-TYPE
+	SYNTAX  INTEGER
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		"Tempo que falta para o evento ou, caso seja no passado, há quanto tempo foi o evento.
+		Só a parte referente aos meses."
+	-- 1.3.6.1.4.1.8888.2.1.5
+	::= { eventoEntry 5 }
+
+
+eventoTempoSemanas OBJECT-TYPE
+	SYNTAX  INTEGER
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		"Tempo que falta para o evento ou, caso seja no passado, há quanto tempo foi o evento.
+		So a parte referente as semanas."
+	-- 1.3.6.1.4.1.8888.2.1.6
+	::= { eventoEntry 6 }
+
+
+eventoTempoDias OBJECT-TYPE
+	SYNTAX  INTEGER
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		"Tempo que falta para o evento ou, caso seja no passado, há quanto tempo foi o evento.
+		Só a parte referente aos dias."
+	-- 1.3.6.1.4.1.8888.2.1.7
+	::= { eventoEntry 7 }
+
+
+eventoTempoHoras OBJECT-TYPE
+	SYNTAX  INTEGER
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		""
+	-- 1.3.6.1.4.1.8888.2.1.8
+	::= { eventoEntry 8 }
+
+
+eventoTempoMinutos OBJECT-TYPE
+	SYNTAX  INTEGER
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		"Tempo que falta para o evento ou, caso seja no passado, há quanto tempo foi o evento.
+		Só a parte referente aos minutos."
+	-- 1.3.6.1.4.1.8888.2.1.9
+	::= { eventoEntry 9 }
 
 
 eventoDuracao OBJECT-TYPE
@@ -118,8 +178,8 @@ eventoDuracao OBJECT-TYPE
 	STATUS  current
 	DESCRIPTION
 		"Duração do evento."
-	-- 1.3.6.1.4.1.8888.2.1.5
-	::= { eventoEntry 5 }
+	-- 1.3.6.1.4.1.8888.2.1.10
+	::= { eventoEntry 10 }
 
 
 eventoFrasePassado OBJECT-TYPE
@@ -128,8 +188,8 @@ eventoFrasePassado OBJECT-TYPE
 	STATUS  current
 	DESCRIPTION
 		"Frase para descrever o evento no passado."
-	-- 1.3.6.1.4.1.8888.2.1.6
-	::= { eventoEntry 6 }
+	-- 1.3.6.1.4.1.8888.2.1.11
+	::= { eventoEntry 11 }
 
 
 eventoFrasePresente OBJECT-TYPE
@@ -138,8 +198,8 @@ eventoFrasePresente OBJECT-TYPE
 	STATUS  current
 	DESCRIPTION
 		"Frase para descrever o evento no presente."
-	-- 1.3.6.1.4.1.8888.2.1.7
-	::= { eventoEntry 7 }
+	-- 1.3.6.1.4.1.8888.2.1.12
+	::= { eventoEntry 12 }
 
 
 eventoFraseFuturo OBJECT-TYPE
@@ -148,8 +208,8 @@ eventoFraseFuturo OBJECT-TYPE
 	STATUS  current
 	DESCRIPTION
 		"Frase para descrever o evento no futuro."
-	-- 1.3.6.1.4.1.8888.2.1.8
-	::= { eventoEntry 8 }
+	-- 1.3.6.1.4.1.8888.2.1.13
+	::= { eventoEntry 13 }
 
 
 -- Conformance
@@ -179,11 +239,16 @@ grMIBBasicGroup OBJECT-GROUP
 		eventoIndex,
 		eventoName,
 		eventoEstado,
-		eventoTempo,
+		eventoTempoAnos,
 		eventoFrasePassado,
 		eventoFrasePresente,
 		eventoFraseFuturo,
-		eventoDuracao }
+		eventoDuracao,
+		eventoTempoDias,
+		eventoTempoHoras,
+		eventoTempoMinutos,
+		eventoTempoMeses,
+		eventoTempoSemanas }
 	STATUS  current
 	DESCRIPTION
 		"Basic objects."

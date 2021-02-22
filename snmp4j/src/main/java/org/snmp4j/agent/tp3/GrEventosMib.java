@@ -64,21 +64,31 @@ public class GrEventosMib
     public static final int colEventoIndex = 1;
     public static final int colEventoName = 2;
     public static final int colEventoEstado = 3;
-    public static final int colEventoTempo = 4;
-    public static final int colEventoDuracao = 5;
-    public static final int colEventoFrasePassado = 6;
-    public static final int colEventoFrasePresente = 7;
-    public static final int colEventoFraseFuturo = 8;
+    public static final int colEventoTempoAnos = 4;
+    public static final int colEventoTempoMeses = 5;
+    public static final int colEventoTempoSemanas = 6;
+    public static final int colEventoTempoDias = 7;
+    public static final int colEventoTempoHoras = 8;
+    public static final int colEventoTempoMinutos = 9;
+    public static final int colEventoDuracao = 10;
+    public static final int colEventoFrasePassado = 11;
+    public static final int colEventoFrasePresente = 12;
+    public static final int colEventoFraseFuturo = 13;
 
     // Column index definitions for eventoEntry:
     public static final int idxEventoIndex = 0;
     public static final int idxEventoName = 1;
     public static final int idxEventoEstado = 2;
-    public static final int idxEventoTempo = 3;
-    public static final int idxEventoDuracao = 4;
-    public static final int idxEventoFrasePassado = 5;
-    public static final int idxEventoFrasePresente = 6;
-    public static final int idxEventoFraseFuturo = 7;
+    public static final int idxEventoTempoAnos = 3;
+    public static final int idxEventoTempoMeses = 4;
+    public static final int idxEventoTempoSemanas = 5;
+    public static final int idxEventoTempoDias = 6;
+    public static final int idxEventoTempoHoras = 7;
+    public static final int idxEventoTempoMinutos = 8;
+    public static final int idxEventoDuracao = 9;
+    public static final int idxEventoFrasePassado = 10;
+    public static final int idxEventoFrasePresente = 11;
+    public static final int idxEventoFraseFuturo = 12;
 
     private MOTableSubIndex[] eventoEntryIndexes;
     private MOTableIndex eventoEntryIndex;
@@ -168,7 +178,7 @@ public class GrEventosMib
                         });
 
         // Columns
-        MOColumn<?>[] eventoEntryColumns = new MOColumn<?>[8];
+        MOColumn<?>[] eventoEntryColumns = new MOColumn<?>[13];
         eventoEntryColumns[idxEventoIndex] =
                 moFactory.createColumn(
                         colEventoIndex,
@@ -184,10 +194,35 @@ public class GrEventosMib
                         colEventoEstado,
                         SMIConstants.SYNTAX_INTEGER,
                         moFactory.createAccess(MOAccessImpl.ACCESSIBLE_FOR_READ_ONLY));
-        eventoEntryColumns[idxEventoTempo] =
+        eventoEntryColumns[idxEventoTempoAnos] =
                 moFactory.createColumn(
-                        colEventoTempo,
-                        SMIConstants.SYNTAX_TIMETICKS,
+                        colEventoTempoAnos,
+                        SMIConstants.SYNTAX_INTEGER,
+                        moFactory.createAccess(MOAccessImpl.ACCESSIBLE_FOR_READ_ONLY));
+        eventoEntryColumns[idxEventoTempoMeses] =
+                moFactory.createColumn(
+                        colEventoTempoMeses,
+                        SMIConstants.SYNTAX_INTEGER,
+                        moFactory.createAccess(MOAccessImpl.ACCESSIBLE_FOR_READ_ONLY));
+        eventoEntryColumns[idxEventoTempoSemanas] =
+                moFactory.createColumn(
+                        colEventoTempoSemanas,
+                        SMIConstants.SYNTAX_INTEGER,
+                        moFactory.createAccess(MOAccessImpl.ACCESSIBLE_FOR_READ_ONLY));
+        eventoEntryColumns[idxEventoTempoDias] =
+                moFactory.createColumn(
+                        colEventoTempoDias,
+                        SMIConstants.SYNTAX_INTEGER,
+                        moFactory.createAccess(MOAccessImpl.ACCESSIBLE_FOR_READ_ONLY));
+        eventoEntryColumns[idxEventoTempoHoras] =
+                moFactory.createColumn(
+                        colEventoTempoHoras,
+                        SMIConstants.SYNTAX_INTEGER,
+                        moFactory.createAccess(MOAccessImpl.ACCESSIBLE_FOR_READ_ONLY));
+        eventoEntryColumns[idxEventoTempoMinutos] =
+                moFactory.createColumn(
+                        colEventoTempoMinutos,
+                        SMIConstants.SYNTAX_INTEGER,
                         moFactory.createAccess(MOAccessImpl.ACCESSIBLE_FOR_READ_ONLY));
         eventoEntryColumns[idxEventoDuracao] =
                 moFactory.createColumn(
@@ -291,16 +326,76 @@ public class GrEventosMib
             super.setValue(idxEventoEstado, newColValue);
         }
 
-        public TimeTicks getEventoTempo() {
-            // --AgentGen BEGIN=eventoEntry::getEventoTempo
+        public Integer32 getEventoTempoAnos() {
+            // --AgentGen BEGIN=eventoEntry::getEventoTempoAnos
             // --AgentGen END
-            return (TimeTicks) super.getValue(idxEventoTempo);
+            return (Integer32) super.getValue(idxEventoTempoAnos);
         }
 
-        public void setEventoTempo(TimeTicks newColValue) {
-            // --AgentGen BEGIN=eventoEntry::setEventoTempo
+        public void setEventoTempoAnos(Integer32 newColValue) {
+            // --AgentGen BEGIN=eventoEntry::setEventoTempoAnos
             // --AgentGen END
-            super.setValue(idxEventoTempo, newColValue);
+            super.setValue(idxEventoTempoAnos, newColValue);
+        }
+
+        public Integer32 getEventoTempoMeses() {
+            // --AgentGen BEGIN=eventoEntry::getEventoTempoMeses
+            // --AgentGen END
+            return (Integer32) super.getValue(idxEventoTempoMeses);
+        }
+
+        public void setEventoTempoMeses(Integer32 newColValue) {
+            // --AgentGen BEGIN=eventoEntry::setEventoTempoMeses
+            // --AgentGen END
+            super.setValue(idxEventoTempoMeses, newColValue);
+        }
+
+        public Integer32 getEventoTempoSemanas() {
+            // --AgentGen BEGIN=eventoEntry::getEventoTempoSemanas
+            // --AgentGen END
+            return (Integer32) super.getValue(idxEventoTempoSemanas);
+        }
+
+        public void setEventoTempoSemanas(Integer32 newColValue) {
+            // --AgentGen BEGIN=eventoEntry::setEventoTempoSemanas
+            // --AgentGen END
+            super.setValue(idxEventoTempoSemanas, newColValue);
+        }
+
+        public Integer32 getEventoTempoDias() {
+            // --AgentGen BEGIN=eventoEntry::getEventoTempoDias
+            // --AgentGen END
+            return (Integer32) super.getValue(idxEventoTempoDias);
+        }
+
+        public void setEventoTempoDias(Integer32 newColValue) {
+            // --AgentGen BEGIN=eventoEntry::setEventoTempoDias
+            // --AgentGen END
+            super.setValue(idxEventoTempoDias, newColValue);
+        }
+
+        public Integer32 getEventoTempoHoras() {
+            // --AgentGen BEGIN=eventoEntry::getEventoTempoHoras
+            // --AgentGen END
+            return (Integer32) super.getValue(idxEventoTempoHoras);
+        }
+
+        public void setEventoTempoHoras(Integer32 newColValue) {
+            // --AgentGen BEGIN=eventoEntry::setEventoTempoHoras
+            // --AgentGen END
+            super.setValue(idxEventoTempoHoras, newColValue);
+        }
+
+        public Integer32 getEventoTempoMinutos() {
+            // --AgentGen BEGIN=eventoEntry::getEventoTempoMinutos
+            // --AgentGen END
+            return (Integer32) super.getValue(idxEventoTempoMinutos);
+        }
+
+        public void setEventoTempoMinutos(Integer32 newColValue) {
+            // --AgentGen BEGIN=eventoEntry::setEventoTempoMinutos
+            // --AgentGen END
+            super.setValue(idxEventoTempoMinutos, newColValue);
         }
 
         public TimeTicks getEventoDuracao() {
@@ -361,8 +456,18 @@ public class GrEventosMib
                     return getEventoName();
                 case idxEventoEstado:
                     return getEventoEstado();
-                case idxEventoTempo:
-                    return getEventoTempo();
+                case idxEventoTempoAnos:
+                    return getEventoTempoAnos();
+                case idxEventoTempoMeses:
+                    return getEventoTempoMeses();
+                case idxEventoTempoSemanas:
+                    return getEventoTempoSemanas();
+                case idxEventoTempoDias:
+                    return getEventoTempoDias();
+                case idxEventoTempoHoras:
+                    return getEventoTempoHoras();
+                case idxEventoTempoMinutos:
+                    return getEventoTempoMinutos();
                 case idxEventoDuracao:
                     return getEventoDuracao();
                 case idxEventoFrasePassado:
@@ -389,8 +494,23 @@ public class GrEventosMib
                 case idxEventoEstado:
                     setEventoEstado((Integer32) value);
                     break;
-                case idxEventoTempo:
-                    setEventoTempo((TimeTicks) value);
+                case idxEventoTempoAnos:
+                    setEventoTempoAnos((Integer32) value);
+                    break;
+                case idxEventoTempoMeses:
+                    setEventoTempoMeses((Integer32) value);
+                    break;
+                case idxEventoTempoSemanas:
+                    setEventoTempoSemanas((Integer32) value);
+                    break;
+                case idxEventoTempoDias:
+                    setEventoTempoDias((Integer32) value);
+                    break;
+                case idxEventoTempoHoras:
+                    setEventoTempoHoras((Integer32) value);
+                    break;
+                case idxEventoTempoMinutos:
+                    setEventoTempoMinutos((Integer32) value);
                     break;
                 case idxEventoDuracao:
                     setEventoDuracao((TimeTicks) value);

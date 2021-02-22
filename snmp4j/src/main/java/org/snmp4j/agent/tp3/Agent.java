@@ -39,6 +39,7 @@ import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 // |:AgenPro|=import
 // |AgenPro:|
@@ -48,7 +49,6 @@ public class Agent implements VariableProvider {
     private static final String DEFAULT_CL_PARAMETERS = "-c[s{=Agent.cfg}] -bc[s{=Agent.bc}]";
     private static final String DEFAULT_CL_COMMANDS =
             "#address[s{=udp:127.0.0.1/161}<(udp|tcp):.*[/[0-9]+]?>] ..";
-    private static List<Evento> eventos = new ArrayList<>();
 
     static {
         LogFactory.setLogFactory(new JavaLogFactory());
@@ -58,6 +58,7 @@ public class Agent implements VariableProvider {
     protected MOServer server;
     // supported MIBs
     protected Modules modules;
+    private ReentrantLock lock = new ReentrantLock();
     private LogAdapter logger = LogFactory.getLogger(Agent.class);
     private String configFile;
     private File bootCounterFile;
@@ -133,18 +134,11 @@ public class Agent implements VariableProvider {
      * </pre>
      *
      * @param args the command line arguments defining at least the listen addresses. The format is
-     *     <code>-c[s{=Agent.cfg}] -bc[s{=Agent.bc}]
-     *    #address[s<(udp|tcp):.*[/[0-9]+]?>] ..</code>. For the format description see {@link
-     *     ArgumentParser}.
+     *             <code>-c[s{=Agent.cfg}] -bc[s{=Agent.bc}]
+     *             #address[s<(udp|tcp):.*[/[0-9]+]?>] ..</code>. For the format description see {@link
+     *             ArgumentParser}.
      */
     public static void main(String[] args) {
-        Evento e = new Evento("WebSummit",
-                LocalDateTime.of(2020,1,1,1,1),
-                Duration.ofMillis(604800000),
-                "O evento já acabou jessica!",
-                "OMG this is real?",
-                "NUNNNNCAAAA MAAAAAIS :(");
-        Agent.eventos.add(e);
         // |:AgenPro|=main
         defaultMain(args);
         // |AgenPro:|
@@ -321,18 +315,37 @@ public class Agent implements VariableProvider {
         return agent;
     }
 
-    //My classes
+    //My methods
 
-    private synchronized void update() {
-        int count = 1;
-        //modules.getGrEventosMib().getEventoEntry().
-        for (Evento e : eventos) {
-            GrEventosMib.EventoEntryRow row = modules.getGrEventosMib().getEventoEntry()
-                    .createRow(new OID(String.valueOf(count)));
-            row = e.getEntry(row,count);
-            modules.getGrEventosMib().getEventoEntry().addRow(row);
-            count++;
-        }
+    private void update() {
+        new Thread(() -> {
+            while (true) {
+                lock();
+                try {
+                    for (Evento e : Admin.getInstance().getEventos()) {
+                        GrEventosMib.EventoEntryRow row = modules.getGrEventosMib().getEventoEntry()
+                                .createRow(new OID(String.valueOf(e.getIndex())));
+                        row = e.getEntry(row);
+                        modules.getGrEventosMib().getEventoEntry().addRow(row);
+                    }
+                } finally {
+                    unlock();
+                }
+                try {
+                    Thread.sleep(Admin.getInstance().getUpdateTime());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public void lock() {
+        this.lock.lock();
+    }
+
+    public void unlock() {
+        this.lock.unlock();
     }
 
 }
