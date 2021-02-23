@@ -328,6 +328,7 @@ public class Agent implements VariableProvider {
                                 .createRow(new OID(String.valueOf(index)));
                         row = e.getEntry(row,index);
                         modules.getGrEventosMib().getEventoEntry().addRow(row);
+                        index++;
                     }
                 } finally {
                     unlock();

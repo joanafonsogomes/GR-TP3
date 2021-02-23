@@ -8,10 +8,15 @@
     <version>1.0.0-SNAPSHOT</version>
     <name>AgenProAgent</name>
     <url>http://www.snmp4j.org</url>
+
+
     <properties>
         <sourceEncoding>UTF-8</sourceEncoding>
         <resourceEncoding>UTF-8</resourceEncoding>
+        <main.class>Main</main.class>
+        <javafx.main.class>MainFX</javafx.main.class>
     </properties>
+
     <organization>
         <name>SNMP4J.org</name>
         <url>http://www.snmp4j.org</url>
@@ -42,6 +47,21 @@
                     <artifactId>snmp4j</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>15.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>15.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>15.0.1</version>
         </dependency>
     </dependencies>
 
@@ -100,6 +120,14 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.5</version>
+                <configuration>
+                    <mainClass>${javafx.main.class}</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>

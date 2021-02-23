@@ -1,14 +1,14 @@
 package org.snmp4j.agent.tp3;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Admin {
 
     private static Admin instance = null;
-    private List<Evento> eventos;
+    private EventosDAO eventos;
     private long updateTime;
 
     public static Admin getInstance(){
@@ -19,25 +19,20 @@ public class Admin {
     }
 
     public Admin(){
-        this.eventos = new ArrayList<>();
-        this.updateTime = 60000;
-
-        Evento e = new Evento("WebSummit",
-                LocalDateTime.of(2021, 2, 10, 1, 1),
-                Duration.ofMillis(604800000),
-                "O evento já acabou jessica!",
-                "OMG this is real?",
-                "NUNNNNCAAAA MAAAAAIS :(");
-        eventos.add(e);
+        try {
+            this.eventos = new EventosDAO("events.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.updateTime = 10000;
     }
 
 
     public List<Evento> getEventos() {
-        return eventos;
-    }
-
-    public void setEventos(List<Evento> eventos) {
-        this.eventos = eventos;
+        try {
+            return eventos.getList();
+        } catch (Exception ignored){}
+        return null;
     }
 
     public long getUpdateTime() {

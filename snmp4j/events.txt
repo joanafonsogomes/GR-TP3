@@ -1,0 +1,3 @@
+{nome="hello2", data="2021-02-23T11:06:19.102301213", duracao="PT16M40S", frasePassado="Adeus", frasePresente="ola", fraseFuturo="UI"}
+{nome="hello3", data="2021-02-23T11:06:19.102301213", duracao="PT16M40S", frasePassado="Adeus", frasePresente="ola", fraseFuturo="UI"}
+{nome="hello4", data="2021-02-23T11:06:19.102301213", duracao="PT16M40S", frasePassado="Adeus", frasePresente="ola", fraseFuturo="UI"}

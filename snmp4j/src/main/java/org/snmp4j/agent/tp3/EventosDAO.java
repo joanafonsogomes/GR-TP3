@@ -10,29 +10,18 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class EnventosDAO {
+public class EventosDAO {
 
     private File eventFile;
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public EnventosDAO(String path) throws IOException {
+    public EventosDAO(String path) throws IOException {
         eventFile = new File(path);
         if (!eventFile.exists())
             eventFile.createNewFile();
 
     }
 
-    public static void main(String[] args) throws IOException {
-        EnventosDAO enventosDAO = new EnventosDAO("events.txt");
-        for (Evento e : enventosDAO.getList()) {
-            System.out.println(e.toString());
-        }
-        Evento evento = new Evento("hello", LocalDateTime.now(), Duration.ofMillis(100000), "Adeus", "ola", "UI");
-        enventosDAO.remove(evento.getName());
-        for (Evento e : enventosDAO.getList()) {
-            System.out.println(e.toString());
-        }
-    }
 
     public void add(Evento e) throws IOException {
         DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(eventFile, true));
@@ -41,26 +30,34 @@ public class EnventosDAO {
         dataOutputStream.close();
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
+
     public void remove(String name) throws IOException {
+        File tempFile = new File(eventFile.getAbsolutePath() + ".tmp");
 
-        File tempFile = new File("tmp.txt");
-        tempFile.createNewFile();
-
-        BufferedReader reader = new BufferedReader(new FileReader(eventFile));
-        DataOutputStream writer = new DataOutputStream(new FileOutputStream(tempFile, true));
+        BufferedReader br = new BufferedReader(new FileReader(eventFile));
+        PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
 
         String line;
 
-        while ((line = reader.readLine()) != null) {
-            if (line.contains(name)) continue;
-            writer.write((line + '\n').getBytes(StandardCharsets.UTF_8));
-            writer.flush();
+        while ((line = br.readLine()) != null) {
+            if (!(getValue(line.trim(),"nome").equals(name))) {
+                pw.println(line);
+                pw.flush();
+            }
         }
-        writer.close();
-        reader.close();
-        boolean successful = tempFile.renameTo(eventFile);
-        System.out.println(successful);
+        pw.close();
+        br.close();
+
+        //Delete the original file
+        if (!eventFile.delete()) {
+            throw new IOException("Could not delete file");
+        }
+
+        //Rename the new file to the filename the original file had.
+        if (!tempFile.renameTo(eventFile))
+            throw new IOException("Could not rename file");
+
+
     }
 
     public List<Evento> getList() throws IOException {
@@ -68,7 +65,7 @@ public class EnventosDAO {
         List<Evento> eventos = new ArrayList<>();
         String line = br.readLine();
         while (line != null) {
-            eventos.add(lineToEvent(line));
+            eventos.add(lineToEvent(line.trim()));
             line = br.readLine();
         }
         br.close();
@@ -76,18 +73,17 @@ public class EnventosDAO {
         return eventos;
     }
 
-    private Evento lineToEvent(String line) {
-        Evento evento = new Evento(
+    private Evento lineToEvent(String line) throws IOException {
+        return new Evento(
                 getValue(line, "nome"),
                 LocalDateTime.parse(Objects.requireNonNull(getValue(line, "data"))),
                 Duration.parse(Objects.requireNonNull(getValue(line, "duracao"))),
                 getValue(line, "frasePresente"),
                 getValue(line, "fraseFuturo"),
                 getValue(line, "frasePassado"));
-        return evento;
     }
 
-    private String getValue(String line, String value) {
+    private String getValue(String line, String value) throws IOException {
         Pattern NAMEpattern = Pattern.compile(value + "=\"[^\"]*\"");
         Matcher NAMEmatcher = NAMEpattern.matcher(line);
         if (NAMEmatcher.find()) {
@@ -96,8 +92,8 @@ public class EnventosDAO {
             Matcher NAME2matcher = NAME2pattern.matcher(NAMEaux);
             if (NAME2matcher.find()) {
                 return NAME2matcher.group();
-            } else return null;
-        } else return null;
+            } throw new IOException("Não foi encontrado o objeto pretendido.");
+        } throw new IOException("Não foi encontrado o objeto pretendido.");
 
     }
 }
