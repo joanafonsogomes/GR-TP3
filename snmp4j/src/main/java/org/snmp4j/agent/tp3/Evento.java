@@ -9,7 +9,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Evento {
-    Counter32 index;
     String name;
     LocalDateTime data;
     Duration duracao;
@@ -17,9 +16,6 @@ public class Evento {
     String frasePresente;
     String fraseFuturo;
 
-    public Evento(){
-
-    }
 
     public Evento(String name, LocalDateTime data, Duration duracao,
                   String frasePassado, String frasePresente, String fraseFuturo) {
@@ -31,8 +27,8 @@ public class Evento {
         this.fraseFuturo = fraseFuturo;
     }
 
-    public GrEventosMib.EventoEntryRow getEntry(GrEventosMib.EventoEntryRow row) {
-        row.setEventoIndex(index);
+    public GrEventosMib.EventoEntryRow getEntry(GrEventosMib.EventoEntryRow row, int index) {
+        row.setEventoIndex(new Counter32(index));
         row.setEventoName(new OctetString(this.name));
         row.setEventoDuracao(new TimeTicks(this.duracao.toMillis()));
         row.setEventoFrasePassado(new OctetString(this.frasePassado));
@@ -83,7 +79,18 @@ public class Evento {
         row.setEventoTempoMinutos(new Integer32(Long.valueOf(minutes).intValue()));
     }
 
-    public Counter32 getIndex() {
-        return index;
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return "{nome=\"" + name + '\"' +
+                ", data=\"" + data.toString() +'\"' +
+                ", duracao=\"" + duracao.toString() +'\"' +
+                ", frasePassado=\"" + frasePassado + '\"' +
+                ", frasePresente=\"" + frasePresente + '\"' +
+                ", fraseFuturo=\"" + fraseFuturo + '\"' +
+                '}';
     }
 }

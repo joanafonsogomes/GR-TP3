@@ -322,10 +322,11 @@ public class Agent implements VariableProvider {
             while (true) {
                 lock();
                 try {
+                    int index=1;
                     for (Evento e : Admin.getInstance().getEventos()) {
                         GrEventosMib.EventoEntryRow row = modules.getGrEventosMib().getEventoEntry()
-                                .createRow(new OID(String.valueOf(e.getIndex())));
-                        row = e.getEntry(row);
+                                .createRow(new OID(String.valueOf(index)));
+                        row = e.getEntry(row,index);
                         modules.getGrEventosMib().getEventoEntry().addRow(row);
                     }
                 } finally {
