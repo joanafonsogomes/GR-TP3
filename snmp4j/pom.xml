@@ -1,135 +1,132 @@
-<!--|:AgenPro|=pom.xml-->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.snmp4j.agent</groupId>
-    <artifactId>snmp4j-agent-tutorial</artifactId>
-    <packaging>jar</packaging>
-    <version>1.0.0-SNAPSHOT</version>
-    <name>AgenProAgent</name>
-    <url>http://www.snmp4j.org</url>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
 
+<groupId>pt.uminho.gr</groupId>
+<artifactId>Eventos</artifactId>
+<version>1.0</version>
+<packaging>jar</packaging>
+<name>eventos</name>
 
-    <properties>
-        <sourceEncoding>UTF-8</sourceEncoding>
-        <resourceEncoding>UTF-8</resourceEncoding>
-        <main.class>Main</main.class>
-        <javafx.main.class>MainFX</javafx.main.class>
-    </properties>
-
-    <organization>
-        <name>SNMP4J.org</name>
-        <url>http://www.snmp4j.org</url>
-    </organization>
-
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.snmp4j</groupId>
-            <artifactId>snmp4j</artifactId>
-            <version>3.4.4</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.snmp4j</groupId>
-            <artifactId>snmp4j-agent</artifactId>
-            <version>3.3.6</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <!-- Exclude transitive dependency to SNMP4J -->
-                    <groupId>org.snmp4j</groupId>
-                    <artifactId>snmp4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
+<build>
+    <plugins>
+        <!-- Build source and target -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+            <configuration>
+                <compilerArgs>
+                </compilerArgs>
+                <source>${java.version}</source>
+                <target>${java.version}</target>
+                <showDeprecation>true</showDeprecation>
+                <showWarnings>true</showWarnings>
+            </configuration>
+        </plugin>
+        <plugin>
             <groupId>org.openjfx</groupId>
-            <artifactId>javafx-base</artifactId>
-            <version>15.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>15.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-fxml</artifactId>
-            <version>15.0.1</version>
-        </dependency>
-    </dependencies>
+            <artifactId>javafx-maven-plugin</artifactId>
+            <version>0.0.5</version>
+            <configuration>
+                <mainClass>${javafx.main.class}</mainClass>
+            </configuration>
+        </plugin>
+        <!-- Distributable archive building -->
+        <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+                <archive>
+                    <manifest>
+                        <!-- MainFX class -->
+                        <mainClass>${main.class}</mainClass>
+                    </manifest>
+                </archive>
+                <descriptorRefs>
+                    <!--  Includes project's dependencies -->
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+                <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>make-assembly</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>1.9</source>
-                    <target>1.9</target>
-                    <encoding>UTF-8</encoding>
-                    <compilerArgument>-Xlint:all</compilerArgument>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>org.snmp4j.agent.tp3.Agent</mainClass>
-                        </manifest>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- append to the packaging phase. -->
-                        <goals>
-                            <goal>single</goal> <!-- goals == mojos -->
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.5</version>
-                <configuration>
-                    <mainClass>${javafx.main.class}</mainClass>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+<dependencies>
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.8</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.snmp4j</groupId>
+        <artifactId>snmp4j</artifactId>
+        <version>3.4.4</version>
+        <scope>compile</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.snmp4j</groupId>
+        <artifactId>snmp4j-agent</artifactId>
+        <version>3.3.6</version>
+        <scope>compile</scope>
+        <exclusions>
+            <exclusion>
+                <!-- Exclude transitive dependency to SNMP4J -->
+                <groupId>org.snmp4j</groupId>
+                <artifactId>snmp4j</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    <dependency>
+        <groupId>org.snmp4j</groupId>
+        <artifactId>snmp4j</artifactId>
+        <version>3.4.4</version>
+    </dependency>
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-base</artifactId>
+        <version>15.0.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-controls</artifactId>
+        <version>15.0.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-fxml</artifactId>
+        <version>15.0.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+    </dependency>
+</dependencies>
+
+<properties>
+    <java.version>15</java.version>
+    <maven.compiler.version>4.0.0</maven.compiler.version>
+    <maven.compiler.source>15</maven.compiler.source>
+    <maven.compiler.target>15</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <main.class>Main</main.class>
+    <javafx.main.class>MainFX</javafx.main.class>
+</properties>
+
+
+
+
 </project>
-        <!--|AgenPro:|-->
