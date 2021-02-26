@@ -68,17 +68,25 @@ public class EventosDAO {
         }
         br.close();
 
+        eventos.removeIf(Evento::itsTime);
+
         return eventos;
     }
 
     private Evento lineToEvent(String line) throws IOException {
-        return new Evento(
+        Evento evento = new Evento(
                 getValue(line, "nome"),
                 LocalDateTime.parse(Objects.requireNonNull(getValue(line, "data"))),
                 Duration.parse(Objects.requireNonNull(getValue(line, "duracao"))),
                 getValue(line, "frasePresente"),
                 getValue(line, "fraseFuturo"),
                 getValue(line, "frasePassado"));
+
+        try {
+            evento.setTimer(Duration.parse(getValue(line,"timer")));
+        } catch (IOException ignored){}
+
+        return evento;
     }
 
     private String getValue(String line, String value) throws IOException {

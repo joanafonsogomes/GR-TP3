@@ -1,7 +1,5 @@
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -11,6 +9,12 @@ import java.time.LocalTime;
 public class Controller {
 
 
+    @FXML
+    private TextField ipAgente;
+    @FXML
+    private TextField portAgente;
+    @FXML
+    private Button startAgent;
     @FXML
     private TextField nomeAdd;
     @FXML
@@ -31,6 +35,15 @@ public class Controller {
     private TextField fraseFuturo;
     @FXML
     private TextField nomeRemover;
+    @FXML
+    private CheckBox checkTimer;
+    @FXML
+    private TextField timerD;
+    @FXML
+    private TextField timerH;
+    @FXML
+    private TextField timerM;
+
 
     @FXML
     void adicionarEvento() {
@@ -44,7 +57,12 @@ public class Controller {
                 frasePresente.getText(),
                 fraseFuturo.getText()
         );
-
+        if (checkTimer.isSelected()){
+            evento.setTimer(Duration.parse("P"+
+                    timerD.getText()+"DT" +
+                    timerH.getText() + "H" +
+                    timerM.getText() + "M"));
+        }
         try {
             Admin.getInstance().getEventosDAO().add(evento);
         } catch (IOException e) {
@@ -64,5 +82,17 @@ public class Controller {
             alert.showAndWait();
         }
     }
+
+    @FXML
+    void startAgent() {
+        new Thread(()->
+                Agent.main(new String[]{
+                        "-c", "Agent.cfg",
+                        "-bc", "Agent.bc",
+                        "udp:"+ ipAgente.getText()+'/'+portAgente.getText()})
+        ).start();
+    startAgent.setDisable(true);
+    }
+
 
 }

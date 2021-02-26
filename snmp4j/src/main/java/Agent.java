@@ -46,6 +46,7 @@ public class Agent implements VariableProvider {
     private static final String DEFAULT_CL_PARAMETERS = "-c[s{=Agent.cfg}] -bc[s{=Agent.bc}]";
     private static final String DEFAULT_CL_COMMANDS =
             "#address[s{=udp:127.0.0.1/161}<(udp|tcp):.*[/[0-9]+]?>] ..";
+    private int oldIndex = 0;
 
     static {
         LogFactory.setLogFactory(new JavaLogFactory());
@@ -319,14 +320,24 @@ public class Agent implements VariableProvider {
             while (true) {
                 lock();
                 try {
+                    for (int i = 0; i<= this.oldIndex; i++){
+                        modules.getGrEventosMib()
+                                .getEventoEntry()
+                                .removeRow(new OID(String.valueOf(i)));
+                    }
+
                     int index=1;
                     for (Evento e : Admin.getInstance().getEventos()) {
-                        GrEventosMib.EventoEntryRow row = modules.getGrEventosMib().getEventoEntry()
+                        GrEventosMib.EventoEntryRow row = modules.getGrEventosMib()
+                                .getEventoEntry()
                                 .createRow(new OID(String.valueOf(index)));
                         row = e.getEntry(row,index);
-                        modules.getGrEventosMib().getEventoEntry().addRow(row);
+                        modules.getGrEventosMib()
+                                .getEventoEntry()
+                                .addRow(row);
                         index++;
                     }
+                    this.oldIndex = index;
                 } finally {
                     unlock();
                 }

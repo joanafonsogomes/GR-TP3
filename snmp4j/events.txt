@@ -1,3 +1,3 @@
 {nome="hello4", data="2021-02-23T11:06:19.102301213", duracao="PT16M40S", frasePassado="Adeus", frasePresente="ola", fraseFuturo="UI"}
 {nome="Aula GR", data="2021-02-26T17:30", duracao="PT3H", frasePassado="A aula já acabou há:", frasePresente="A aula está a decorrer.", fraseFuturo="A aula irá começar em:"}
-{nome="Aula Redes", data="2021-02-24T12:00", duracao="PT3H", frasePassado="A aula já acabou há:", frasePresente="A aula está a decorrer.", fraseFuturo="A aula irá começar em:"}
+{nome="teste", data="2021-02-25T19:29", duracao="PT1M", frasePassado="hdtjfykg", frasePresente="sdjfk", fraseFuturo="shdjf", timer="PT1M"}
