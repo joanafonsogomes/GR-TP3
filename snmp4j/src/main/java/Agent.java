@@ -41,6 +41,12 @@ import java.util.concurrent.locks.ReentrantLock;
 // |:AgenPro|=import
 // |AgenPro:|
 
+/**
+ * Classe do agente gerada pelo AgenPro e modificada por nós.
+ *
+ * @author Filipe Miguel Teixeira Freitas Guimarães - A865308
+ * @author Joana Isabel Afonso Gomes - A84912
+ */
 public class Agent implements VariableProvider {
 
     private static final String DEFAULT_CL_PARAMETERS = "-c[s{=Agent.cfg}] -bc[s{=Agent.bc}]";
@@ -313,8 +319,14 @@ public class Agent implements VariableProvider {
         return agent;
     }
 
-    //My methods
+    //*****************
+    // Adições
+    //*****************
 
+    /**
+     * Método para atualizar a lista na mib. Obtém a lista da classe EventosDAO e com os
+     * métodos fornecidos pelo AgenPro define linha a linha a mib.
+     */
     private void update() {
         new Thread(() -> {
             while (true) {
@@ -331,12 +343,15 @@ public class Agent implements VariableProvider {
                         GrEventosMib.EventoEntryRow row = modules.getGrEventosMib()
                                 .getEventoEntry()
                                 .createRow(new OID(String.valueOf(index)));
-                        row = e.getEntry(row,index);
+                        row.setEventoIndex(new Counter32(index));
+                        e.getEntry(row);
                         modules.getGrEventosMib()
                                 .getEventoEntry()
                                 .addRow(row);
                         index++;
                     }
+                    index--;
+                    modules.getGrEventosMib().getNumeroEventos().setValue(new Counter32(index));
                     this.oldIndex = index;
                 } finally {
                     unlock();
@@ -350,10 +365,17 @@ public class Agent implements VariableProvider {
         }).start();
     }
 
+    /**
+     * Protege a classe usando um reentrant lock
+     */
     public void lock() {
         this.lock.lock();
     }
 
+    /**
+     *
+     * Liberta o reentrant lock
+     */
     public void unlock() {
         this.lock.unlock();
     }

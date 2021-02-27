@@ -6,6 +6,12 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+/**
+ * Controlador do javafx
+ *
+ * @author Filipe Miguel Teixeira Freitas Guimarães - A865308
+ * @author Joana Isabel Afonso Gomes - A84912
+ */
 public class Controller {
 
 
@@ -43,6 +49,8 @@ public class Controller {
     private TextField timerH;
     @FXML
     private TextField timerM;
+    @FXML
+    private TextField secondsPoll;
 
 
     @FXML
@@ -92,6 +100,12 @@ public class Controller {
                         "udp:"+ ipAgente.getText()+'/'+portAgente.getText()})
         ).start();
     startAgent.setDisable(true);
+    }
+
+
+    @FXML
+    void changePoll() {
+        Admin.getInstance().setUpdateTime(Long.parseLong(secondsPoll.getText())*1000);
     }
 
 

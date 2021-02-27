@@ -10,6 +10,7 @@ import javafx.stage.WindowEvent;
  * Classe Main da aplicação em javaFX.
  *
  * @author Filipe Miguel Teixeira Freitas Guimarães - A865308
+ * @author Joana Isabel Afonso Gomes - A84912
  */
 public class MainFX extends Application {
     /**

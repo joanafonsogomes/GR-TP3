@@ -28,52 +28,95 @@
           <RowConstraints maxHeight="372.0" minHeight="10.0" prefHeight="141.3333740234375" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <VBox layoutX="10.0" layoutY="632.0" prefHeight="125.0" prefWidth="849.0" styleClass="card">
+            <HBox styleClass="card">
                <children>
-                  <Label styleClass="card-title" text="Agente">
-                     <font>
-                        <Font size="9.0" />
-                     </font>
-                  </Label>
-                  <HBox>
+                  <VBox prefHeight="125.0" prefWidth="849.0">
                      <children>
-                        <VBox>
+                        <Label styleClass="card-title" text="Agente">
+                           <font>
+                              <Font size="9.0" />
+                           </font>
+                        </Label>
+                        <HBox>
                            <children>
-                              <HBox>
+                              <VBox>
                                  <children>
-                                    <Label styleClass="control-label" text="IP">
-                                       <font>
-                                          <Font size="9.0" />
-                                       </font>
-                                    </Label>
-                                    <Region prefHeight="47.0" prefWidth="171.0" />
-                                    <Label styleClass="control-label" text="PORT">
-                                       <font>
-                                          <Font size="9.0" />
-                                       </font>
-                                    </Label>
+                                    <HBox>
+                                       <children>
+                                          <Label styleClass="control-label" text="IP">
+                                             <font>
+                                                <Font size="9.0" />
+                                             </font>
+                                          </Label>
+                                          <Region prefHeight="47.0" prefWidth="171.0" />
+                                          <Label styleClass="control-label" text="PORT">
+                                             <font>
+                                                <Font size="9.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <HBox>
+                                       <children>
+                                          <TextField fx:id="ipAgente" prefHeight="36.0" prefWidth="127.0" text="127.0.0.1" HBox.hgrow="ALWAYS" />
+                                          <Region prefHeight="36.0" prefWidth="53.0" />
+                                          <TextField fx:id="portAgente" layoutX="10.0" layoutY="10.0" prefHeight="36.0" prefWidth="71.0" text="3003" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                              <Region prefHeight="69.0" prefWidth="95.0" />
+                              <HBox alignment="BOTTOM_CENTER" spacing="10.0">
+                                 <children>
+                                    <Button fx:id="startAgent" mnemonicParsing="false" onMouseClicked="#startAgent" style="-fx-text-fill: #282828;" styleClass="button-raised" text="Start" />
                                  </children>
                               </HBox>
-                              <HBox>
-                                 <children>
-                                    <TextField fx:id="ipAgente" prefHeight="36.0" prefWidth="127.0" text="127.0.0.1" HBox.hgrow="ALWAYS" />
-                                    <Region prefHeight="36.0" prefWidth="53.0" />
-                                    <TextField fx:id="portAgente" layoutX="10.0" layoutY="10.0" prefHeight="36.0" prefWidth="71.0" text="3003" />
-                                 </children>
-                              </HBox>
-                           </children>
-                        </VBox>
-                        <Region prefHeight="69.0" prefWidth="495.0" />
-                        <HBox alignment="BOTTOM_CENTER" spacing="10.0">
-                           <children>
-                              <Button fx:id="startAgent" mnemonicParsing="false" onMouseClicked="#startAgent" style="-fx-text-fill: #282828;" styleClass="button-raised" text="Start" />
                            </children>
                         </HBox>
+                        <Region prefHeight="71.0" prefWidth="904.0" />
                      </children>
-                  </HBox>
-                  <Region prefHeight="71.0" prefWidth="904.0" />
+                  </VBox>
+                  <Region prefHeight="113.0" prefWidth="0.0" />
+                  <VBox layoutX="10.0" layoutY="10.0" prefHeight="113.0" prefWidth="536.0">
+                     <children>
+                        <Label styleClass="card-title" text="Update Time">
+                           <font>
+                              <Font size="9.0" />
+                           </font>
+                        </Label>
+                        <HBox prefHeight="69.0" prefWidth="313.0">
+                           <children>
+                              <VBox>
+                                 <children>
+                                    <HBox>
+                                       <children>
+                                          <Label fx:id="change" styleClass="control-label" text="Segundos">
+                                             <font>
+                                                <Font size="9.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <HBox>
+                                       <children>
+                                          <TextField fx:id="secondsPoll" prefHeight="36.0" prefWidth="56.0" text="10" HBox.hgrow="ALWAYS" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                              <Region prefHeight="69.0" prefWidth="95.0" />
+                              <HBox alignment="BOTTOM_CENTER" spacing="10.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onMouseClicked="#changePoll" style="-fx-text-fill: #282828;" styleClass="button-raised" text="Change" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <Region prefHeight="71.0" prefWidth="904.0" />
+                     </children>
+                  </VBox>
                </children>
-            </VBox>
+            </HBox>
             <VBox prefHeight="200.0" prefWidth="100.0" styleClass="card" GridPane.rowIndex="1">
                <children>
                   <HBox prefHeight="100.0" prefWidth="200.0">

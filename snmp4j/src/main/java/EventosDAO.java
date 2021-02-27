@@ -8,8 +8,17 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Classe que abstrai o acesso ao ficheiro para o resto da aplicação.
+ *
+ * @author Filipe Miguel Teixeira Freitas Guimarães - A865308
+ * @author Joana Isabel Afonso Gomes - A84912
+ */
 public class EventosDAO {
 
+    /**
+     * Ficheiro que contem todos os eventos.
+     */
     private File eventFile;
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -21,6 +30,11 @@ public class EventosDAO {
     }
 
 
+    /**
+     * Adiciona um evento ao ficheiro.
+     * @param e Evento.
+     * @throws IOException Caso não consiga aceder ao ficheiro.
+     */
     public void add(Evento e) throws IOException {
         DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(eventFile, true));
         dataOutputStream.write((e.toString() + '\n').getBytes(StandardCharsets.UTF_8));
@@ -29,6 +43,12 @@ public class EventosDAO {
     }
 
 
+    /**
+     * Remove um evento no ficheiro pelo nome.
+     *
+     * @param name Nome do evento.
+     * @throws IOException Caso não consiga aceder ao ficheiro.
+     */
     public void remove(String name) throws IOException {
         File tempFile = new File(eventFile.getAbsolutePath() + ".tmp");
 
@@ -58,6 +78,12 @@ public class EventosDAO {
 
     }
 
+    /**
+     * Método que transforma as linhas do ficheiro numa lista.
+     *
+     * @return Lista de eventos.
+     * @throws IOException Caso não consiga aceder ao ficheiro.
+     */
     public List<Evento> getList() throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(eventFile.getPath()));
         List<Evento> eventos = new ArrayList<>();
@@ -73,6 +99,12 @@ public class EventosDAO {
         return eventos;
     }
 
+    /**
+     * Tradutor dos campos do ficheiro para objetos do tipo Evento.
+     * @param line Linha a processar.
+     * @return Evento processado.
+     * @throws IOException Caso não consiga aceder ao ficheiro ou obter um campo.
+     */
     private Evento lineToEvent(String line) throws IOException {
         Evento evento = new Evento(
                 getValue(line, "nome"),
@@ -89,6 +121,13 @@ public class EventosDAO {
         return evento;
     }
 
+    /**
+     * Método auxiliar que, usando expressões regulares obtém os valores dos diversos campos do evento.
+     * @param line Linha a processar.
+     * @param value Campo a obter.
+     * @return Valor do campo.
+     * @throws IOException Caso não consiga aceder ao ficheiro.
+     */
     private String getValue(String line, String value) throws IOException {
         Pattern NAMEpattern = Pattern.compile(value + "=\"[^\"]*\"");
         Matcher NAMEmatcher = NAMEpattern.matcher(line);
